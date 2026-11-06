@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ficha: Machine Decision Is Not Final</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;600;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+:root{
+  --bg:#EEF1EE; --surface:#FFFFFF; --ink:#1D2723; --muted:#53615B; --line:#C9D2CC;
+  --jade:#2F6F5E; --jade-soft:#DCEAE4; --seal:#B8402F; --ok:#2F6F5E; --bad:#B8402F;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A17; --surface:#1D2622; --ink:#E6ECE8; --muted:#9DAAA3; --line:#33403A;
+    --jade:#6DBFA5; --jade-soft:#233A32; --seal:#E0705E; --ok:#6DBFA5; --bad:#E0705E; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A17; --surface:#1D2622; --ink:#E6ECE8; --muted:#9DAAA3; --line:#33403A;
+  --jade:#6DBFA5; --jade-soft:#233A32; --seal:#E0705E; --ok:#6DBFA5; --bad:#E0705E; color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "Atkinson Hyperlegible",system-ui,sans-serif}
+main{max-width:46rem;margin:0 auto;padding:1.25rem 1.1rem 4rem}
+h1,h2,h3{font-family:"Spectral",Georgia,serif;line-height:1.2;margin:0}
+.hero{display:grid;grid-template-columns:auto 1fr;gap:1.2rem;align-items:center;padding:1.5rem 0 1rem}
+.wu{position:relative;width:7.5rem;height:7.5rem;display:grid;place-items:center;border:0;background:none;cursor:pointer;color:var(--ink);padding:0}
+.wu svg{position:absolute;inset:0;width:100%;height:100%}
+.wu circle{fill:none;stroke:var(--ink);stroke-width:5;stroke-linecap:round;stroke-dasharray:300 40;transform-origin:center;transition:stroke-dasharray .8s ease,transform .8s ease}
+.wu:hover circle,.wu.open circle{stroke-dasharray:340 0;transform:rotate(120deg)}
+.wu span{font:800 3.4rem/1 "Spectral",serif;position:relative}
+.seal{position:absolute;right:-.2rem;bottom:.1rem;width:1.5rem;height:1.5rem;background:var(--seal);border-radius:3px}
+.hero h1{font-size:clamp(1.7rem,6vw,2.5rem);font-weight:800}
+.hero p{margin:.4rem 0 0;color:var(--muted)}
+#wuNote{min-height:3.2rem;margin:.2rem 0 1rem;color:var(--jade);font-style:italic}
+nav[role=tablist]{display:flex;gap:.4rem;overflow-x:auto;padding:.3rem 0 .6rem;border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5}
+nav button{flex:0 0 auto;font:700 .95rem "Atkinson Hyperlegible",sans-serif;padding:.55rem .9rem;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+nav button[aria-selected=true]{background:var(--jade);border-color:var(--jade);color:#fff}
+:root[data-theme=dark] nav button[aria-selected=true]{color:#10201A}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) nav button[aria-selected=true]{color:#10201A}}
+button:focus-visible{outline:3px solid var(--jade);outline-offset:2px}
+section[role=tabpanel]{padding-top:1.4rem}
+section[hidden]{display:none}
+h2{font-size:1.5rem;margin-bottom:.7rem}
+p{margin:.6rem 0;max-width:62ch}
+.book{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--jade);border-radius:6px;padding:1rem 1.1rem;margin:1rem 0}
+.book b{font-family:"Spectral",serif}
+.tiles{display:grid;gap:.8rem;margin-top:1rem}
+.tile{width:100%;text-align:left;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:1rem 1.1rem;font:inherit;cursor:pointer}
+.tile h3{font-size:1.25rem}
+.tile .hint{color:var(--muted);font-size:.9rem}
+.tile .back{display:none;margin-top:.5rem}
+.tile[aria-expanded=true]{border-color:var(--jade);background:var(--jade-soft)}
+.tile[aria-expanded=true] .back{display:block}
+.tile[aria-expanded=true] .hint{display:none}
+.seg{display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0}
+.seg button{flex:1 1 8rem;font:700 1rem "Atkinson Hyperlegible",sans-serif;padding:.8rem;border:2px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);cursor:pointer}
+.seg button[aria-pressed=true]{border-color:var(--jade);background:var(--jade-soft)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:1rem 1.1rem}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:1rem 1.1rem;margin:0 0 1rem}
+.q p{font-weight:700;margin-top:0}
+.opt{display:block;width:100%;text-align:left;font:inherit;padding:.65rem .8rem;margin:.4rem 0;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);cursor:pointer}
+.opt.right{border-color:var(--ok);background:var(--jade-soft)}
+.opt.wrong{border-color:var(--bad)}
+.fb{min-height:1.5rem;margin:.4rem 0 0;color:var(--muted)}
+.score{font:800 1.3rem "Spectral",serif;margin-top:.5rem}
+ul.think{padding-left:1.1rem;max-width:62ch}
+ul.think li{margin:.8rem 0}
+.foot{margin-top:2.5rem;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line);padding-top:1rem}
+@media (prefers-reduced-motion:reduce){.wu circle{transition:none}}
+@media (max-width:30rem){.hero{grid-template-columns:1fr;justify-items:start}}
+</style>
+</head>
+<body>
+<main>
+  <header class="hero">
+    <button class="wu" id="wuBtn" aria-label="Tocar el círculo para ver una idea" aria-expanded="false">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44"/></svg>
+      <span lang="zh">無</span><i class="seal" aria-hidden="true"></i>
+    </button>
+    <div>
+      <h1>Machine Decision Is Not Final</h1>
+      <p>Una ficha para entender de qué va el libro y por qué importa.</p>
+    </div>
+  </header>
+  <div id="wuNote" aria-live="polite">Toca el círculo.</div>
+
+  <nav role="tablist" aria-label="Secciones de la ficha">
+    <button role="tab" aria-selected="true" aria-controls="p0" id="t0">De qué va</button>
+    <button role="tab" aria-selected="false" aria-controls="p1" id="t1">Ideas clave</button>
+    <button role="tab" aria-selected="false" aria-controls="p2" id="t2">¿Qué es una IA?</button>
+    <button role="tab" aria-selected="false" aria-controls="p3" id="t3">Ponte a prueba</button>
+    <button role="tab" aria-selected="false" aria-controls="p4" id="t4">Para discutir</button>
+  </nav>
+
+  <section role="tabpanel" id="p0" aria-labelledby="t0">
+    <h2>De qué va</h2>
+    <div class="book">
+      <b>Machine Decision Is Not Final</b><br>
+      Editado por Benjamin H. Bratton, Anna Greenspan, Amy Ireland y Bogna Konior.
+    </div>
+    <p>Es un libro de ensayos que mira la inteligencia artificial desde China: su historia, su filosofía y su tecnología. Lo habitual es pensar la IA solo desde Silicon Valley; aquí la pregunta es qué cambia si la pensamos desde otra tradición.</p>
+    <p>Por eso aparecen ideas de la filosofía china, como el <i>wu</i> (el vacío) y el <i>wuwei</i> (actuar sin forzar), para pensar qué es una máquina que “decide” y qué lugar ocupa entre nosotros.</p>
+    <p>Recorre las otras pestañas y toca las tarjetas.</p>
+  </section>
+
+  <section role="tabpanel" id="p1" aria-labelledby="t1" hidden>
+    <h2>Ideas clave</h2>
+    <p>Toca cada tarjeta para darle la vuelta.</p>
+    <div class="tiles" id="tiles"></div>
+  </section>
+
+  <section role="tabpanel" id="p2" aria-labelledby="t2" hidden>
+    <h2>¿Qué es una IA?</h2>
+    <p>Elige una opción y mira qué encaja y qué no. No hay respuesta única.</p>
+    <div class="seg" id="seg">
+      <button aria-pressed="false" data-k="tool">Herramienta</button>
+      <button aria-pressed="false" data-k="ente">Ente</button>
+      <button aria-pressed="false" data-k="human">Humano</button>
+    </div>
+    <div class="panel" id="segOut" aria-live="polite">Elige una para empezar.</div>
+  </section>
+
+  <section role="tabpanel" id="p3" aria-labelledby="t3" hidden>
+    <h2>Ponte a prueba</h2>
+    <div id="quiz"></div>
+    <div class="score" id="score" aria-live="polite"></div>
+  </section>
+
+  <section role="tabpanel" id="p4" aria-labelledby="t4" hidden>
+    <h2>Para discutir</h2>
+    <ul class="think">
+      <li>Si algo responde, sigue la conversación y hace preguntas, ¿sigue siendo solo una herramienta?</li>
+      <li>El vacío hace útil a una vasija. ¿Qué “vacío” hace útil a una IA?</li>
+      <li>¿Cambia tu idea de la tecnología si piensas las cosas por sus relaciones y no por lo que “son”?</li>
+      <li>¿Quién decide qué es una IA: quien la fabrica, quien la usa o la cultura donde vive?</li>
+    </ul>
+    <p class="foot">Los conceptos de esta ficha son un punto de partida. Para citar el libro, revisa los capítulos directamente.</p>
+  </section>
+</main>
+
+<script>
+(function(){
+  var $=function(s){return document.querySelector(s)};
+  var tabs=[].slice.call(document.querySelectorAll('[role=tab]'));
+  function show(i){
+    tabs.forEach(function(t,j){
+      t.setAttribute('aria-selected',j===i);
+      $('#p'+j).hidden=j!==i;
+    });
+  }
+  tabs.forEach(function(t,i){
+    t.addEventListener('click',function(){show(i)});
+    t.addEventListener('keydown',function(e){
+      var n=null;
+      if(e.key==='ArrowRight')n=(i+1)%tabs.length;
+      if(e.key==='ArrowLeft')n=(i+tabs.length-1)%tabs.length;
+      if(n!==null){show(n);tabs[n].focus();}
+    });
+  });
+
+  var notes=[
+    'Wu (無) quiere decir “no tener” o “vacío”. En el taoísmo, lo vacío no es nada: es lo que deja espacio.',
+    'Una vasija sirve por su hueco, no por el barro. Piensa en eso cuando uses una IA.',
+    'Un “ente” no es cosa ni persona. Es una palabra para lo que todavía no sabemos nombrar.'
+  ];
+  var ni=0,wb=$('#wuBtn');
+  wb.addEventListener('click',function(){
+    $('#wuNote').textContent=notes[ni%notes.length];ni++;
+    wb.classList.toggle('open');
+    wb.setAttribute('aria-expanded',wb.classList.contains('open'));
+  });
+
+  var cards=[
+    ['Wu (無), el vacío útil','El Daodejing compara una vasija con una casa: lo que sirve es el espacio vacío. Lo que “no es” permite que algo funcione.'],
+    ['Wuwei (無為), actuar sin forzar','No significa no hacer nada. Es actuar de acuerdo con el flujo de las cosas, en vez de imponerles tu voluntad.'],
+    ['Pensar en relaciones','En buena parte del pensamiento chino algo se define por cómo se relaciona con lo demás, no por una esencia fija. El yin y el yang son polos que se necesitan.'],
+    ['Zhuangzi y la mariposa','Zhuangzi soñó que era una mariposa y al despertar dudó si era un hombre que soñó o una mariposa soñando. Las fronteras entre categorías son flojas.'],
+    ['Cosmotécnica (Yuk Hui)','Idea de un filósofo afín al tema: cada cultura piensa la tecnología desde su propia idea del mundo, así que no hay una sola manera de entender la IA.']
+  ];
+  var tiles=$('#tiles');
+  cards.forEach(function(c){
+    var b=document.createElement('button');
+    b.className='tile';b.setAttribute('aria-expanded','false');
+    b.innerHTML='<h3></h3><span class="hint">Toca para ver más</span><span class="back"></span>';
+    b.querySelector('h3').textContent=c[0];
+    b.querySelector('.back').textContent=c[1];
+    b.addEventListener('click',function(){
+      b.setAttribute('aria-expanded',b.getAttribute('aria-expanded')!=='true');
+    });
+    tiles.appendChild(b);
+  });
+
+  var seg={
+    tool:'Encaja: la usamos para un fin, igual que un martillo o una calculadora. No encaja del todo: un martillo no responde, no sigue el hilo ni te hace preguntas.',
+    ente:'Encaja: no es cosa ni persona, y esta palabra deja la categoría abierta. Pendiente: todavía no tenemos un buen nombre ni sabemos si hay “alguien” adentro.',
+    human:'Encaja: conversa, responde y entiende el lenguaje. No encaja: no tiene cuerpo, ni una vida continua, ni la memoria de una persona.'
+  };
+  var sb=[].slice.call(document.querySelectorAll('#seg button'));
+  sb.forEach(function(b){
+    b.addEventListener('click',function(){
+      sb.forEach(function(x){x.setAttribute('aria-pressed',x===b)});
+      $('#segOut').textContent=seg[b.dataset.k];
+    });
+  });
+
+  var qs=[
+    {q:'¿Qué enseña la imagen de la vasija?',o:['Que el barro es lo más importante','Que el vacío es lo que la hace útil','Que las vasijas son herramientas'],a:1,f:'El hueco es lo que permite usarla.'},
+    {q:'¿Qué significa wuwei?',o:['No hacer nada','Obedecer órdenes','Actuar sin forzar, de acuerdo con el flujo'],a:2,f:'No es pasividad: es no imponerse a las cosas.'},
+    {q:'¿Qué propone la idea de cosmotécnica?',o:['Que la tecnología es igual en todas partes','Que cada cultura piensa la tecnología desde su idea del mundo','Que solo Occidente inventa tecnología'],a:1,f:'Por eso importa mirar la IA desde otras tradiciones.'}
+  ];
+  var done=0,pts=0,quiz=$('#quiz');
+  qs.forEach(function(item){
+    var box=document.createElement('div');box.className='q';
+    var p=document.createElement('p');p.textContent=item.q;box.appendChild(p);
+    var fb=document.createElement('div');fb.className='fb';
+    var opts=[];
+    item.o.forEach(function(t,i){
+      var b=document.createElement('button');b.className='opt';b.textContent=t;
+      b.addEventListener('click',function(){
+        if(box.dataset.done)return;
+        box.dataset.done='1';done++;
+        if(i===item.a){b.classList.add('right');pts++;fb.textContent='¡Correcto! '+item.f;}
+        else{b.classList.add('wrong');opts[item.a].classList.add('right');fb.textContent='Casi. '+item.f;}
+        if(done===qs.length)$('#score').textContent='Tu resultado: '+pts+' de '+qs.length;
+      });
+      opts.push(b);box.appendChild(b);
+    });
+    box.appendChild(fb);quiz.appendChild(box);
+  });
+})();
+</script>
+</body>
+</html>
